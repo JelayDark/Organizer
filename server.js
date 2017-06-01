@@ -19,12 +19,14 @@ if (process.env.NODE_ENV === 'production') {
 
 
 app.post('/api/auth', usersController.checkLogin);
-
 app.get('/api/users', usersController.allUsers);
 
 app.get('/api/todolists', listsController.allLists);
 app.post('/api/todolists/create', listsController.createList);
+
 app.post('/api/todolists/needs/:id', listsController.allNeeds);
+app.post('/api/needs/add/:id', listsController.addTodo);
+app.post('/api/needs/toggle/:id', listsController.toggleTodo);
 
 
 db.connect('mongodb://localhost:27017/takeyourtime', (err, database) => {
