@@ -22,8 +22,18 @@ exports.createList = (req, res) => {
     })
 }
 
+exports.deleteList = (req, res) => {
+    Lists.deleteList(req.params.id, (err, result) => {
+        if(err || !result) {
+            console.log(err);
+            return res.sendStatus(400);
+        } else {
+            res.sendStatus(200);
+        }
+    })
+}
+
 exports.allNeeds = (req, res) => {
-    // console.log("Needs REQ:", req.params.id);
     Lists.allNeeds(req.params.id, (err, docs) => {
         if(err || !docs) {
             console.log(err);
@@ -35,7 +45,18 @@ exports.allNeeds = (req, res) => {
 }
 
 exports.addTodo = (req, res) => {
-    Lists.addTodo(req.params.id, req.body, (err, result) => {
+    Lists.addTodo(req.params.id, req.body, (err, doc) => {
+        if(err || !doc) {
+            console.log(err);
+            return res.sendStatus(400);
+        } else {
+            res.send(doc);
+        }
+    })
+}
+
+exports.deleteTodo = (req, res) => {
+    Lists.deleteTodo(req.params.id, req.body, (err, result) => {
         if(err || !result) {
             console.log(err);
             return res.sendStatus(400);
@@ -46,7 +67,7 @@ exports.addTodo = (req, res) => {
 }
 
 exports.toggleTodo = (req, res) => {
-    Lists.addTodo(req.params.id, req.body, (err, result) => {
+    Lists.toggleTodo(req.params.id, req.body, (err, result) => {
         if(err || !result) {
             console.log(err);
             return res.sendStatus(400);

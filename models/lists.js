@@ -19,7 +19,14 @@ exports.createList = (list, cb) => {
     })
 }
 
+exports.deleteList = (id, cb) => {
+    db.get().collection('todolists').deleteOne({ _id: ObjectID(id) }, (err, result) => {
+                cb(err, result);
+            })
+}
+
 exports.allNeeds = (activeID, cb) => {
+    // console.log(activeID);
     db.get().collection('todolists').find({_id: ObjectID(activeID)}, {needs: 1}).toArray((err, docs) => {
         // console.log('ABFDS', docs[0].needs);
         if(docs.length != 0) {
@@ -30,29 +37,37 @@ exports.allNeeds = (activeID, cb) => {
     })
 }
 
-// exports.addTodo = (activeID, todo, cb) => {
-//     // db.get().collection('todolists').update({_id: ObjectID(activeID)}, {$push: {needs: {task: todo.task, isCompleted: todo.isCompleted}}});
-//     //     console.log('ABFDS1: ', docs[0].needs);
-//     db.get().collection('todolists').update({_id: ObjectID(activeID)}, { $push: { needs: { task: todo.task, isCompleted: todo.isCompleted } } }, {new: true}, (err, docs) => {
-//                 // console.log(docs.task._id);
-//                 cb(err, docs);
-//     })
-// }   
-
 exports.addTodo = (activeID, todo, cb) => {
-    // db.get().collection('todolists').update({_id: ObjectID(activeID)}, {$push: {needs: {task: todo.task, isCompleted: todo.isCompleted}}});
-    //     console.log('ABFDS1: ', docs[0].needs);
-    db.get().collection('todolists').findOneAndUpdate({_id: ObjectID(activeID)}, { $push: { needs: { task: todo.task, isCompleted: todo.isCompleted } } }, {new: true}, (err, doc) => {
-                if (err) return next(err);
-                // console.log(doc.needs[doc.needs.length-1].task);
+    db.get().collection('todolists').find({_id: ObjectID(activeID), "needs.task": todo.task}).toArray((err, docs) => {
+        if(docs.length === 0) {
+            db.get().collection('todolists').findOneAndUpdate({_id: ObjectID(activeID)}, { $push: {
+                                                                                     needs: { 
+                                                                                         task: todo.task, 
+                                                                                         isCompleted: todo.isCompleted 
+                                                                                        } 
+                                                                                    } 
+                                                                                }, {returnOriginal: false}, (err, doc) => {
                 cb(err, doc);
+    })
+        } else {
+            cb(err, false);
+        }
     })
 }   
 
+exports.deleteTodo = (activeID, todo, cb) => {
+    db.get().collection('todolists').findOneAndUpdate({ _id: ObjectID(activeID)
+                                                        }, { $pull: {needs: {task: todo.task}} }, {returnOriginal: false}, (err, doc) => {
+                cb(err, doc);
+            })
+} 
+
+
 exports.toggleTodo = (activeID, todo, cb) => {
-    db.get().collection('todolists').findOneAndUpdate({_id: ObjectID(activeID)}, { needs: { task: todo.task, isCompleted: !todo.isCompleted } }, {new: true}, (err, doc) => {
-                if (err) return next(err);
-                // console.log(doc.needs[doc.needs.length-1].task);
+    db.get().collection('todolists').findOneAndUpdate({
+                                            _id: ObjectID(activeID),
+                                            needs: { $elemMatch: { task: todo.task } }
+                                        }, { $set:{ "needs.$.isCompleted" : todo.isCompleted} }, {returnOriginal: false}, (err, doc) => {
                 cb(err, doc);
     })
 }   
