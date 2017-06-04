@@ -8,7 +8,7 @@ exports.allContacts = (cb) => {
 }
 
 exports.addContact = (user, cb) => {
-    db.get().collection('contacts').insert({ name: user.name, company: user.company, phone: user.phone, email: user.email }, (err, result) => {
+    db.get().collection('contacts').insert({ name: user.name, company: user.company, phone: user.phone, email: user.email, image: user.image, about: user.about }, (err, result) => {
         cb(err, result);
     })
 }
@@ -26,7 +26,8 @@ exports.editContact = (activeID, user, cb) => {
                                                     company: user.company, 
                                                     phone: user.phone, 
                                                     email: user.email, 
-                                                    image: user.image
+                                                    image: user.image,
+                                                    about: user.about
                                                 } }, {returnOriginal: false}, (err, doc) => {
                 if(doc) {
                     db.get().collection('contacts').find().toArray((err, docs) => {

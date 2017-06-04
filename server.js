@@ -6,6 +6,7 @@ import db from './db';
 import usersController from './controllers/usersController';
 import listsController from './controllers/listsController';
 import contactsController from './controllers/contactsController';
+import eventsController from './controllers/eventsController';
 
 const app = express();
 
@@ -35,6 +36,11 @@ app.get('/api/contacts', contactsController.allContacts);
 app.post('/api/contacts/add', contactsController.addContact);
 app.post('/api/contacts/delete/:id', contactsController.deleteContact);
 app.post('/api/contacts/edit/:id', contactsController.editContact);
+
+app.get('/api/events', eventsController.getEvents);
+app.post('/api/events/add', eventsController.addEvent);
+app.post('/api/events/edit/:id', eventsController.editEvent);
+app.post('/api/events/delete/:id', eventsController.deleteEvent);
 
 
 
